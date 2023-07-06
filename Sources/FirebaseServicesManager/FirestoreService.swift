@@ -8,10 +8,13 @@
 import Foundation
 import FirebaseFirestore
 
+public class FSMQuery {
+    public static let firestore = Firestore.firestore()
+}
+
 /// Service class for interacting with Firestore.
 public class FirestoreService {
-    private let firestore = Firestore.firestore()  // Firestore instance
-    
+    private let firestore = Firestore.firestore()
     /// Initializes a new instance of FirestoreService.
     init() {
         
@@ -191,7 +194,7 @@ public class FirestoreService {
     ///   - dataDic: Optional. A dictionary containing the updated data to be applied to the document.
     ///   - dataObject: Optional. An object conforming to `FirestoreDocument` that will be converted to a dictionary to update the document.
     ///   - completion: A closure to be called upon completion of the update operation, containing a result of type `Result<T?, Error>`.
-    public func update<T: FirestoreDocument>(with id: String, documentAt collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?,Error>) -> ()) {
+    public func update<T: FirestoreDocument>(with id: String, documentIn collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?,Error>) -> ()) {
         let fsRef = firestore.collection(collectionPath).document(id)
         var documentDic: [String: Any]?
         
