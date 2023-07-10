@@ -1,7 +1,7 @@
 # FirebaseServicesManager
-[![license](https://github.com/DevCrew-io/firebase-utils-ios/blob/main/LICENSE)
-[](https://img.shields.io/badge/Code-Swift-informational?style=flat&logo=swift&color=FFA500)
-[![Github tag](https://img.shields.io/github/v/tag/DevCrew-io/chatgpt-ios-sdk.svg)]()
+
+[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/DevCrew-io/firebase-utils-ios/blob/main/LICENSE)
+![](https://img.shields.io/badge/Code-Swift-informational?style=flat&logo=swift&color=FFA500)
 
 
 FirebaseServices is a Swift framework that provides a convenient way to interact with various Firebase services, including Firestore, Storage, and Realtime Database.
