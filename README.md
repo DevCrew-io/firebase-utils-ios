@@ -8,7 +8,18 @@ FirebaseServices is a Swift framework that provides a convenient way to interact
 
 ## Installation
 
-To use FirebaseServices in your project, follow these steps:
+### Swift Package Manager
+The [Swift Package Manager](https://www.swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the swift compiler.
+
+```
+dependencies: [
+    .package(url: "https://github.com/DevCrew-io/firebase-utils-ios.git", .upToNextMajor(from: "1.0.0"))
+]
+```
+
+### Manually
+
+To use FirebaseServices manually  in your project, follow these steps:
 
 1. Install the Firebase SDK by integrating it into your project using either Cocoapods or Swift Package Manager.
 
