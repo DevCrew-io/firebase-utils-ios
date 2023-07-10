@@ -167,7 +167,7 @@ public class FirestoreService {
     ///   - collection: The collection where the document resides.
     ///   - type: The type of the document to observe, conforming to `FirestoreDocument`.
     ///   - completion: A closure to be called when changes occur, containing a result of type `Result<T, Error>`.
-    public func observeDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T,Error>) -> ()) {
+    public func observeDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) {
         firestore.collection(collection).document(id).addSnapshotListener { docSnap, error in
             if let error = error {
                 completion(.failure(error))  // Handle the error if any

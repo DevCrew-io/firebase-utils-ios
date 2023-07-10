@@ -8,6 +8,10 @@ public class FirebaseServices {
     
     /// Storage service instance.
     public var storage = StorageService()
+
+    /// Database service instance.
+    public var database = DatabaseService()
+
     
     /// Private initializer to prevent direct instantiation.
     private init() {
