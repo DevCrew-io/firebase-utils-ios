@@ -24,11 +24,16 @@ public class StorageService {
     ///   - folder: The folder path in Firebase Storage where the file should be uploaded.
     ///   - completion: A closure that gets called upon completion with the result of the operation.
     public func upload(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) {
-        storage.child("\(folder)/\(name)").putData(data) { metaData, error in
+        storage.child("\(folder)/\(name)").putData(data) {[weak self] metaData, error in
             if let error = error {
                 completion(.failure(error))
             } else {
-                completion(.success((metaData?.path, metaData?.name)))
+                self?.storage.child(metaData?.path ?? "").downloadURL(completion: { url, error in
+                    if let error = error {
+                        completion(.failure(error))
+                    } else {
+                        completion(.success((url?.absoluteString, metaData?.name)))                    }
+                })
             }
         }
     }
@@ -41,11 +46,16 @@ public class StorageService {
     ///   - folder: The folder path in Firebase Storage where the file is located.
     ///   - completion: A closure that gets called upon completion with the result of the operation.
     public func update(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) {
-        storage.child("\(folder)/\(name)").putData(data) { metaData, error in
+        storage.child("\(folder)/\(name)").putData(data) {[weak self] metaData, error in
             if let error = error {
                 completion(.failure(error))
             } else {
-                completion(.success((metaData?.path,metaData?.name)))
+                self?.storage.child(metaData?.path ?? "").downloadURL(completion: { url, error in
+                    if let error = error {
+                        completion(.failure(error))
+                    } else {
+                        completion(.success((url?.absoluteString, metaData?.name)))                    }
+                })
             }
         }
     }
@@ -55,8 +65,8 @@ public class StorageService {
     /// - Parameters:
     ///   - url: The URL of the file to be deleted.
     ///   - completion: A closure that gets called upon completion with the result of the operation.
-    public func delete(file url: String, completion: @escaping (_ result: Result<Bool?, Error>) -> ()) {
-        storage.child(url).delete { error in
+    public func delete(file path: String, colletion: String, completion: @escaping (_ result: Result<Bool?, Error>) -> ()) {
+        storage.child("\(colletion)/\(path)").delete { error in
             if let error = error {
                 completion(.failure(error))
             } else {

@@ -20,3 +20,4 @@ extension FirestoreDocument {
         set {}  // Empty setter to satisfy the protocol requirement
     }
 }
+
