@@ -112,7 +112,17 @@ FirebaseServices.manager.database.getList(Object.self, fromPath: "path/to/list")
 }
 
 // Observe changes to an object in the Firebase Realtime Database
-FirebaseServices.manager.database.observeObject(Object.self, atPath: "path/to/object") { result in
+FirebaseServices.manager.database.observeSingleObject(Object.self, atPath: "path/to/object") { result in
+    // Handle the result
+}
+
+// Observe changes to an list in the Firebase Realtime Database
+FirebaseServices.manager.database.observeList(Object.self, atPath: "path/to/object") { result in
+    // Handle the result
+}
+
+// Get an object in the Firebase Realtime Database
+FirebaseServices.manager.database.getSingleObject(Object.self, atPath: "path/to/object") { result in
     // Handle the result
 }
 
