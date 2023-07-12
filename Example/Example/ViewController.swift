@@ -20,15 +20,26 @@ class ViewController: UIViewController {
     }
 
     @IBAction func operationButtonTapped(_ sender: UIButton) {
-        let dbEmployee = DBEmployee()
-       // dbEmployee.name
-        FirebaseServices.manager.database.add(dataObject: dbEmployee, completion: { result in
-            print("fdsafds")
-        })
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        let listViewController = storyboard.instantiateViewController(withIdentifier: "ListViewController")
-//
-//        navigationController?.pushViewController(listViewController, animated: true)
+        switch (sender.tag) {
+        case TappedButton.database.rawValue:
+            AppController.shared.operationType = .firestore
+            AppController.shared.reactiveType = .observable
+        case TappedButton.reactiveDatabase.rawValue:
+            AppController.shared.operationType = .firestore
+            AppController.shared.reactiveType = .nonObservable
+        case TappedButton.firestore.rawValue:
+            AppController.shared.operationType = .firestore
+            AppController.shared.reactiveType = .nonObservable
+        case TappedButton.reactiveFirestore.rawValue:
+            AppController.shared.operationType = .firestore
+            AppController.shared.reactiveType = .nonObservable
+        default:
+            break
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let listViewController = storyboard.instantiateViewController(withIdentifier: "ListViewController") as? ListViewController else {return}
+
+        navigationController?.pushViewController(listViewController, animated: true)
          
     }
     

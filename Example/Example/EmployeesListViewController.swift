@@ -14,24 +14,38 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     var vm = EmployeesListViewModel()
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print("printing")
-        return vm.employeesList.count
+        return AppController.shared.operationType == .firestore ? vm.employeesList.count : vm.dbEmployeesList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         print("printing")
         if
-            let cell = tableView.dequeueReusableCell(withIdentifier: "Test") as? Test
+            let cell = tableView.dequeueReusableCell(withIdentifier: "EmployeeTableViewCell") as? EmployeeTableViewCell
         {
-            let employee = vm.employeesList[indexPath.row]
-            
-            cell.nameLabel.text = employee.name
-            cell.deptLabel.text = employee.department
-            cell.jobTitleLabel.text = employee.jobTitle
-            if let imagePath = employee.picUrl, !imagePath.isEmpty, let url = URL(string: imagePath) {
-                cell.profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
+            if AppController.shared.operationType == .firestore {
+                let employee = vm.employeesList[indexPath.row]
+                
+                cell.nameLabel.text = employee.name
+                cell.deptLabel.text = employee.department
+                cell.jobTitleLabel.text = employee.jobTitle
+                if let imagePath = employee.picUrl, !imagePath.isEmpty, let url = URL(string: imagePath) {
+                    cell.profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
+                } else {
+                    cell.profileImageView.image = UIImage(systemName: "person.crop.circle")
+                }
             } else {
-                cell.profileImageView.image = UIImage(systemName: "person.crop.circle")
+                let employee = vm.dbEmployeesList[indexPath.row]
+                
+                cell.nameLabel.text = employee.name
+                cell.deptLabel.text = employee.department
+                cell.jobTitleLabel.text = employee.jobTitle
+                if let imagePath = employee.picUrl, !imagePath.isEmpty, let url = URL(string: imagePath) {
+                    cell.profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
+                } else {
+                    cell.profileImageView.image = UIImage(systemName: "person.crop.circle")
+                }
             }
+            
             
             return cell
         }
@@ -50,7 +64,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UINib(nibName: "Test", bundle: nil), forCellReuseIdentifier: "Test")
+        tableView.register(UINib(nibName: "EmployeeTableViewCell", bundle: nil), forCellReuseIdentifier: "EmployeeTableViewCell")
         tableView.dataSource = self
         tableView.delegate = self
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapped))
