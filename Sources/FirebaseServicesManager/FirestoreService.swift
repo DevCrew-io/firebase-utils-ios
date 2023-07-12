@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-public class FSMQuery {
+public class FSQuery {
     public static let firestore = Firestore.firestore()
 }
 

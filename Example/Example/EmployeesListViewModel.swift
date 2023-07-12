@@ -10,8 +10,49 @@ import FirebaseServicesManager
 
 class EmployeesListViewModel: ObservableObject {
     @Published var employeesList: [Employee] = []
+    @Published var dbEmployeesList: [DBEmployee] = []
+
     func fetchAllEmployees(completion: @escaping(_ error: Error?) -> ()) {
-        let query = FSMQuery.firestore.collection("employees")
+        if AppController.shared.operationType == .firestore {
+            switch AppController.shared.reactiveType {
+            case .observable:
+                observeFirestoreEmployee { error in
+                    completion(error)
+                }
+            case .nonObservable:
+                getFirestoreEmployees { error in
+                    completion(error)
+                }
+            }
+        } else {
+            switch AppController.shared.reactiveType {
+            case .observable:
+                observeDatabaseEmployees { error in
+                    completion(error)
+                }
+            case .nonObservable:
+                getDatabaseEmployees { error in
+                    completion(error)
+                }
+            }
+        }
+    }
+    
+    private func getFirestoreEmployees(completion: @escaping(_ error: Error?) -> ()) {
+        let query = FSQuery.firestore.collection("employees")
+        FirebaseServices.manager.firestore.getList(Employee.self, firestore: query) { result in
+            switch result {
+            case .success(let employees):
+                self.employeesList = employees
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+                
+            }
+        }
+    }
+    private func observeFirestoreEmployee(completion: @escaping(_ error: Error?) -> ()) {
+        let query = FSQuery.firestore.collection("employees")
         FirebaseServices.manager.firestore.observeDocuments(query: query, Employee.self) { result in
             switch result {
             case .success(let employees):
@@ -23,4 +64,29 @@ class EmployeesListViewModel: ObservableObject {
             }
         }
     }
+    private func getDatabaseEmployees(completion: @escaping(_ error: Error?) -> ()) {
+        let ref = DBRef.database.child("employees")
+        FirebaseServices.manager.database.getList(ref: ref, DBEmployee.self) { result in
+            switch result {
+            case .success(let employees):
+                self.dbEmployeesList = employees ?? []
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+                
+            }
+        }
+    }
+    private func observeDatabaseEmployees(completion: @escaping(_ error: Error?) -> ()) {
+        let ref = DBRef.database.child("employees")
+        FirebaseServices.manager.database.observe(ref: ref, DBEmployee.self) { result in
+            switch result {
+            case .success(let employees):
+                self.dbEmployeesList = employees ?? []
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+                
+            }
+        }    }
 }
