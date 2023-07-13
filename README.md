@@ -77,17 +77,6 @@ Example usage:
 FirebaseServices.manager.firestore.add(documentAt: "collectionPath", dataDic: dataDic) { result in
     // Handle the result
 }
-
-// Retrieve a list of documents
-FirebaseServices.manager.firestore.getList(Object.self, firestore: query) { result in
-    // Handle the result
-}
-
-// Observe changes to a collection
-FirebaseServices.manager.firestore.observeDocuments(query: query, Object.self) { result in
-    // Handle the result
-}
-
 // Update a document
 FirebaseServices.manager.firestore.update(with: "documentID", documentIn: "collectionPath", dataDic: dataDic) { result in
     // Handle the result
@@ -95,6 +84,25 @@ FirebaseServices.manager.firestore.update(with: "documentID", documentIn: "colle
 
 // Delete a document
 FirebaseServices.manager.firestore.delete(id: "documentID", documentAt: "collectionPath") { result in
+    // Handle the result
+}
+```
+
+###  With query example
+
+**Query Creation example**
+```
+ let query = FSQuery.firestore.collection("collection name")
+```
+
+```
+// Retrieve a list of documents
+FirebaseServices.manager.firestore.getList(Object.self, firestore: query) { result in
+    // Handle the result
+}
+
+// Observe changes to a collection
+FirebaseServices.manager.firestore.observeDocuments(query: query, Object.self) { result in
     // Handle the result
 }
 ```
