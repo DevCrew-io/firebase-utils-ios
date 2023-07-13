@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import FirebaseServicesManager
-import FirebaseFirestore
 
 class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!

@@ -28,6 +28,74 @@ public class FirestoreService {
     ///   - dataObject: Optional custom object conforming to `FirestoreDocument` that will be converted to a dictionary and added to the document. Default is `nil`.
     ///   - completion: A closure to be called when the operation is completed, containing a result of type `Result<T?, Error>`.
     public func add<T: FirestoreDocument>(documentAt collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?, Error>) -> ()) {
+        addRequest(documentAt: collectionPath, completion: completion)
+    }
+    
+    /// Retrieves a list of documents from Firestore based on the provided query.
+    ///
+    /// - Parameters:
+    ///   - type: The type of the documents to retrieve, conforming to `FirestoreDocument`.
+    ///   - query: The Firestore query used to retrieve the documents.
+    ///   - completion: A closure to be called when the operation is completed, containing a result of type `Result<[T], Error>`.
+    public func getList<T: FirestoreDocument>(_ type: T.Type, firestore query: Query, completion: @escaping(Result<[T], Error>) -> ()) {
+        getListRequest(type, firestore: query, completion: completion)
+    }
+    
+    /// Retrieves a specific document from Firestore based on the provided document ID and collection.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the document to retrieve.
+    ///   - collection: The name of the collection containing the document.
+    ///   - type: The type of the document to retrieve, conforming to `FirestoreDocument`.
+    ///   - completion: A closure to be called when the operation is completed, containing a result of type `Result<T?, Error>`.
+    public func getDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?, Error>) -> ()) {
+        getDocumentRequest(with: id, from: collection, type, completion: completion)
+    }
+    
+    /// Observes changes to a collection in Firestore based on the provided query and returns an array of documents of type `T`.
+    ///
+    /// - Parameters:
+    ///   - query: The Firestore query used to observe the collection.
+    ///   - type: The type of the documents to observe, conforming to `FirestoreDocument`.
+    ///   - completion: A closure to be called when changes occur, containing a result of type `Result<[T], Error>`.
+    public func observeDocuments<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) {
+        observeDocumentsRequest(query: query, type, completion: completion)
+    }
+    
+    /// Observes changes to a specific document in Firestore based on the provided document ID and collection, and returns the document of type `T`.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the document to observe.
+    ///   - collection: The collection where the document resides.
+    ///   - type: The type of the document to observe, conforming to `FirestoreDocument`.
+    ///   - completion: A closure to be called when changes occur, containing a result of type `Result<T, Error>`.
+    public func observeDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) {
+        observeDocumentRequest(with: id, from: collection, type, completion: completion)
+    }
+    
+    /// Updates a document in Firestore with the provided ID and collection path, using either a dictionary or an object conforming to `FirestoreDocument`.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the document to update.
+    ///   - collectionPath: The path of the collection where the document resides.
+    ///   - dataDic: Optional. A dictionary containing the updated data to be applied to the document.
+    ///   - dataObject: Optional. An object conforming to `FirestoreDocument` that will be converted to a dictionary to update the document.
+    ///   - completion: A closure to be called upon completion of the update operation, containing a result of type `Result<T?, Error>`.
+    public func update<T: FirestoreDocument>(with id: String, documentIn collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?,Error>) -> ()) {
+        updateRequest(with: id, documentIn: collectionPath, completion: completion)
+    }
+    
+    /// Deletes a document from Firestore with the provided ID and collection path.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the document to delete.
+    ///   - collectionPath: The path of the collection where the document resides.
+    ///   - completion: A closure to be called upon completion of the delete operation, containing a result of type `Result<Bool, Error>`.
+    public func delete(id: String, documentAt collectionPath: String, completion: @escaping(Result<Bool,Error>) -> ()) {
+        deleteRequest(id: id, documentAt: collectionPath, completion: completion)
+    }
+    // MARK: - Private Function
+    private func addRequest<T: FirestoreDocument>(documentAt collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?, Error>) -> ()) {
         let fsRef = firestore.collection(collectionPath)  // Reference to the collection
         var ref: DocumentReference? = nil
         var documentDic: [String: Any]?
@@ -59,14 +127,7 @@ public class FirestoreService {
             }
         }
     }
-    
-    /// Retrieves a list of documents from Firestore based on the provided query.
-    ///
-    /// - Parameters:
-    ///   - type: The type of the documents to retrieve, conforming to `FirestoreDocument`.
-    ///   - query: The Firestore query used to retrieve the documents.
-    ///   - completion: A closure to be called when the operation is completed, containing a result of type `Result<[T], Error>`.
-    public func getList<T: FirestoreDocument>(_ type: T.Type, firestore query: Query, completion: @escaping(Result<[T], Error>) -> ()) {
+    private func getListRequest<T: FirestoreDocument>(_ type: T.Type, firestore query: Query, completion: @escaping(Result<[T], Error>) -> ()) {
         query.getDocuments { snapshot, error in
             if let error = error {
                 completion(.failure(error))  // Handle the error if any
@@ -92,15 +153,7 @@ public class FirestoreService {
             }
         }
     }
-    
-    /// Retrieves a specific document from Firestore based on the provided document ID and collection.
-    ///
-    /// - Parameters:
-    ///   - id: The ID of the document to retrieve.
-    ///   - collection: The name of the collection containing the document.
-    ///   - type: The type of the document to retrieve, conforming to `FirestoreDocument`.
-    ///   - completion: A closure to be called when the operation is completed, containing a result of type `Result<T?, Error>`.
-    public func getDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?, Error>) -> ()) {
+    private func getDocumentRequest<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?, Error>) -> ()) {
         let fsRef = firestore.collection(collection).document(id)
         fsRef.getDocument { document, error in
             if let error = error {
@@ -126,14 +179,7 @@ public class FirestoreService {
             }
         }
     }
-    
-    /// Observes changes to a collection in Firestore based on the provided query and returns an array of documents of type `T`.
-    ///
-    /// - Parameters:
-    ///   - query: The Firestore query used to observe the collection.
-    ///   - type: The type of the documents to observe, conforming to `FirestoreDocument`.
-    ///   - completion: A closure to be called when changes occur, containing a result of type `Result<[T], Error>`.
-    public func observeDocuments<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) {
+    private func observeDocumentsRequest<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) {
         query.addSnapshotListener { snapshot, error in
             if let error = error {
                 completion(.failure(error))  // Handle the error if any
@@ -159,15 +205,7 @@ public class FirestoreService {
             }
         }
     }
-    
-    /// Observes changes to a specific document in Firestore based on the provided document ID and collection, and returns the document of type `T`.
-    ///
-    /// - Parameters:
-    ///   - id: The ID of the document to observe.
-    ///   - collection: The collection where the document resides.
-    ///   - type: The type of the document to observe, conforming to `FirestoreDocument`.
-    ///   - completion: A closure to be called when changes occur, containing a result of type `Result<T, Error>`.
-    public func observeDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) {
+    private func observeDocumentRequest<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) {
         firestore.collection(collection).document(id).addSnapshotListener { docSnap, error in
             if let error = error {
                 completion(.failure(error))  // Handle the error if any
@@ -185,16 +223,7 @@ public class FirestoreService {
             }
         }
     }
-    
-    /// Updates a document in Firestore with the provided ID and collection path, using either a dictionary or an object conforming to `FirestoreDocument`.
-    ///
-    /// - Parameters:
-    ///   - id: The ID of the document to update.
-    ///   - collectionPath: The path of the collection where the document resides.
-    ///   - dataDic: Optional. A dictionary containing the updated data to be applied to the document.
-    ///   - dataObject: Optional. An object conforming to `FirestoreDocument` that will be converted to a dictionary to update the document.
-    ///   - completion: A closure to be called upon completion of the update operation, containing a result of type `Result<T?, Error>`.
-    public func update<T: FirestoreDocument>(with id: String, documentIn collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?,Error>) -> ()) {
+    private func updateRequest<T: FirestoreDocument>(with id: String, documentIn collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?,Error>) -> ()) {
         let fsRef = firestore.collection(collectionPath).document(id)
         var documentDic: [String: Any]?
         
@@ -212,14 +241,7 @@ public class FirestoreService {
             }
         }
     }
-    
-    /// Deletes a document from Firestore with the provided ID and collection path.
-    ///
-    /// - Parameters:
-    ///   - id: The ID of the document to delete.
-    ///   - collectionPath: The path of the collection where the document resides.
-    ///   - completion: A closure to be called upon completion of the delete operation, containing a result of type `Result<Bool, Error>`.
-    public func delete(id: String, documentAt collectionPath: String, completion: @escaping(Result<Bool,Error>) -> ()) {
+    private func deleteRequest(id: String, documentAt collectionPath: String, completion: @escaping(Result<Bool,Error>) -> ()) {
         let fsRef = firestore.collection(collectionPath).document(id)
         
         fsRef.delete { err in
@@ -230,6 +252,5 @@ public class FirestoreService {
             }
         }
     }
-
 }
 

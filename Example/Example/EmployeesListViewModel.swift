@@ -8,9 +8,9 @@
 import Foundation
 import FirebaseServicesManager
 
-class EmployeesListViewModel: ObservableObject {
-    @Published var employeesList: [Employee] = []
-    @Published var dbEmployeesList: [DBEmployee] = []
+class EmployeesListViewModel {
+    var employeesList: [Employee] = []
+    var dbEmployeesList: [DBEmployee] = []
 
     func fetchAllEmployees(completion: @escaping(_ error: Error?) -> ()) {
         if AppController.shared.operationType == .firestore {

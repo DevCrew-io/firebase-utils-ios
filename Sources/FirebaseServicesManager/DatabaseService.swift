@@ -27,6 +27,73 @@ public class DatabaseService {
     ///   - dataObject: The data to be added as a custom object conforming to the `DatabaseNode` protocol.
     ///   - completion: The completion handler called with the result of the operation, containing the added data or an error.
     public func add<T: DatabaseNode>(path: DatabaseReference? = nil, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping (Result<T?, Error>) -> ()) {
+        addRequest(path: path,completion: completion)
+    }
+    
+    /// Updates an existing data node in the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node to be updated.
+    ///   - dataDic: The updated data as a dictionary.
+    ///   - dataObject: The updated data as a custom object conforming to the `DatabaseNode` protocol.
+    ///   - completion: The completion handler called with the result of the operation, containing the updated data or an error.
+    public func update<T: DatabaseNode>(ref: DatabaseReference, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping (Result<T?, Error>) -> ()) {
+        updateRequest(ref: ref, completion: completion)
+    }
+    
+    /// Retrieves a single object from the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - eventType: The type of the data event to observe (e.g., .value, .childAdded).
+    ///   - type: The type of the object to be retrieved, conforming to the `DatabaseNode` protocol.
+    ///   - completion: The completion handler called with the result of the operation, containing the retrieved object or an error.
+    public func getSingleObject<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping (_ result: Result<T?, Error>) -> ()) {
+        getSingleObjectRequest(ref: ref, eventType: eventType, type, completion: completion)
+    }
+    
+    /// Retrieves a list of objects from the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - type: The type of the objects to be retrieved, conforming to the `DatabaseNode` protocol.
+    ///   - completion: The completion handler called with the result of the operation, containing the retrieved list of objects or an error.
+    public func getList<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
+        getListRequest(ref: ref, type, completion: completion)
+    }
+    
+    /// Observes changes in a list of objects in the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - type: The type of the objects to be observed, conforming to the `DatabaseNode` protocol.
+    ///   - completion: The completion handler called with the result of the operation, containing the observed list of objects or an error.
+    public func observe<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
+        observeRequest(ref: ref, type, completion: completion)
+    }
+    
+    /// Observes changes in a list of objects in the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - type: The type of the objects to be observed, conforming to the `DatabaseNode` protocol.
+    ///   - completion: The completion handler called with the result of the operation, containing the observed object or an error.
+    public func observeSingleObject<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping(_ result: Result<T?, Error>) -> ()) {
+        observeSingleObjectRequest(ref: ref, eventType: eventType, type, completion: completion)
+    }
+    
+    /// Observes changes in a list of objects in the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - completion: The completion handler called with the result of the operation, containing an error if failed to remove.
+    public func remove(ref: DatabaseReference, completion: @escaping(_ error: Error?) -> ()) {
+        removeRequest(ref: ref, completion: completion)
+    }
+    
+    // MARK: - Private Function -
+    
+    private func addRequest<T: DatabaseNode>(path: DatabaseReference? = nil, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping (Result<T?, Error>) -> ()) {
         var dbRef = DatabaseReference()
         
         if let ref = path {
@@ -64,15 +131,7 @@ public class DatabaseService {
             }
         }
     }
-
-    /// Updates an existing data node in the database.
-    ///
-    /// - Parameters:
-    ///   - ref: The reference to the data node to be updated.
-    ///   - dataDic: The updated data as a dictionary.
-    ///   - dataObject: The updated data as a custom object conforming to the `DatabaseNode` protocol.
-    ///   - completion: The completion handler called with the result of the operation, containing the updated data or an error.
-    public func update<T: DatabaseNode>(ref: DatabaseReference, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping (Result<T?, Error>) -> ()) {
+    private func updateRequest<T: DatabaseNode>(ref: DatabaseReference, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping (Result<T?, Error>) -> ()) {
         var nodeDic: [String: Any] = [:]
         
         if let dataDic = dataDic {
@@ -102,15 +161,8 @@ public class DatabaseService {
             }
         }
     }
-
-    /// Retrieves a single object from the database.
-    ///
-    /// - Parameters:
-    ///   - ref: The reference to the data node.
-    ///   - eventType: The type of the data event to observe (e.g., .value, .childAdded).
-    ///   - type: The type of the object to be retrieved, conforming to the `DatabaseNode` protocol.
-    ///   - completion: The completion handler called with the result of the operation, containing the retrieved object or an error.
-    public func getSingleObject<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping (_ result: Result<T?, Error>) -> ()) {
+    
+    private func getSingleObjectRequest<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping (_ result: Result<T?, Error>) -> ()) {
         // Observe a single event of the specified type to retrieve a single object
         ref.observeSingleEvent(of: eventType) { dataSnapshot in
             guard let value = dataSnapshot.value as? [String: Any] else {
@@ -130,14 +182,8 @@ public class DatabaseService {
             }
         }
     }
-
-    /// Retrieves a list of objects from the database.
-    ///
-    /// - Parameters:
-    ///   - ref: The reference to the data node.
-    ///   - type: The type of the objects to be retrieved, conforming to the `DatabaseNode` protocol.
-    ///   - completion: The completion handler called with the result of the operation, containing the retrieved list of objects or an error.
-    public func getList<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
+    
+    private func getListRequest<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
         ref.observeSingleEvent(of: .value) { snapshot in
             guard snapshot.exists() else {
                 completion(.success(nil))
@@ -163,42 +209,30 @@ public class DatabaseService {
             }
         }
     }
-
-    /// Observes changes in a list of objects in the database.
-    ///
-    /// - Parameters:
-    ///   - ref: The reference to the data node.
-    ///   - type: The type of the objects to be observed, conforming to the `DatabaseNode` protocol.
-    ///   - completion: The completion handler called with the result of the operation, containing the observed list of objects or an error.
-    public func observe<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
+    
+    private func observeRequest<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
         ref.observe(.value) { snapshot in
             if let dataSnapshot = snapshot.children.allObjects as? [DataSnapshot] {
                 var resultArray:[T] = []
-                    for data in dataSnapshot {
-                        let nodeId = data.key // Retrieve the node ID/key
-                        if let dataObject = data.value as? [String: Any] {
-                            do {
+                for data in dataSnapshot {
+                    let nodeId = data.key // Retrieve the node ID/key
+                    if let dataObject = data.value as? [String: Any] {
+                        do {
                             let data = try JSONSerialization.data(withJSONObject: dataObject, options: [])
                             var parsedObject = try JSONDecoder().decode(type, from: data)
-                                parsedObject.nodeId = nodeId
-                                resultArray.append(parsedObject)
+                            parsedObject.nodeId = nodeId
+                            resultArray.append(parsedObject)
                         } catch {
                             debugPrint("error \(error.localizedDescription)")
                         }
-                        }
                     }
-                completion(.success(resultArray))
                 }
+                completion(.success(resultArray))
+            }
         }
     }
     
-    /// Observes changes in a list of objects in the database.
-    ///
-    /// - Parameters:
-    ///   - ref: The reference to the data node.
-    ///   - type: The type of the objects to be observed, conforming to the `DatabaseNode` protocol.
-    ///   - completion: The completion handler called with the result of the operation, containing the observed object or an error.
-    public func observeSingleObject<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping(_ result: Result<T?, Error>) -> ()) {
+    private func observeSingleObjectRequest<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping(_ result: Result<T?, Error>) -> ()) {
         ref.observeSingleEvent(of: eventType) { dataSnapshot  in
             guard let value = dataSnapshot.value as? [String: Any] else {
                 return
@@ -218,12 +252,7 @@ public class DatabaseService {
         }
     }
     
-    /// Observes changes in a list of objects in the database.
-    ///
-    /// - Parameters:
-    ///   - ref: The reference to the data node.
-    ///   - completion: The completion handler called with the result of the operation, containing an error if failed to remove.
-    public func remove(ref: DatabaseReference, completion: @escaping(_ error: Error?) -> ()) {
+    private func removeRequest(ref: DatabaseReference, completion: @escaping(_ error: Error?) -> ()) {
         ref.removeValue { error, _ in
             if let error = error {
                 completion(error)
@@ -232,5 +261,4 @@ public class DatabaseService {
             }
         }
     }
-
 }
