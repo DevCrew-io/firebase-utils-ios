@@ -33,6 +33,34 @@ To use FirebaseServices manually  in your project, follow these steps:
 ```swift
 import FirebaseServices
 ```
+### Firebase Project Setup
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/), sign in with your Google account, create a new Firebase project or select an existing one and follow the steps mentioned by firebase to complete firebase configurations.
+
+**Note**: Ensure that the `GoogleService-Info.plist` file is included in your project's target and is present in your app's bundle during runtime.
+
+### Initialisation
+To initialise `FirebaseServiceManager`, In AppDelegate.swift:
+ ```
+ import FirebaseServiceManager
+  ```
+```swift
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    var window: UIWindow?
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        FirebaseServices.manager.configure()
+
+
+        return true
+    }
+}
+
+```
 
 ## Usage
 
@@ -49,17 +77,6 @@ Example usage:
 FirebaseServices.manager.firestore.add(documentAt: "collectionPath", dataDic: dataDic) { result in
     // Handle the result
 }
-
-// Retrieve a list of documents
-FirebaseServices.manager.firestore.getList(Object.self, firestore: query) { result in
-    // Handle the result
-}
-
-// Observe changes to a collection
-FirebaseServices.manager.firestore.observeDocuments(query: query, Object.self) { result in
-    // Handle the result
-}
-
 // Update a document
 FirebaseServices.manager.firestore.update(with: "documentID", documentIn: "collectionPath", dataDic: dataDic) { result in
     // Handle the result
@@ -67,6 +84,25 @@ FirebaseServices.manager.firestore.update(with: "documentID", documentIn: "colle
 
 // Delete a document
 FirebaseServices.manager.firestore.delete(id: "documentID", documentAt: "collectionPath") { result in
+    // Handle the result
+}
+```
+
+###  With query example
+
+**Query Creation example**
+```
+ let query = FSQuery.firestore.collection("collection name")
+```
+
+```
+// Retrieve a list of documents
+FirebaseServices.manager.firestore.getList(Object.self, firestore: query) { result in
+    // Handle the result
+}
+
+// Observe changes to a collection
+FirebaseServices.manager.firestore.observeDocuments(query: query, Object.self) { result in
     // Handle the result
 }
 ```
@@ -102,6 +138,15 @@ Example usage:
 
 ```swift
 // Add an object to the Firebase Realtime Database
+
+**Database path creation example**
+`DatabaseReference` is a class provided by the Firebase Realtime Database framework that represents a reference to a specific location in the database. It allows you to read, write, and listen to data at that particular location and its child nodes. Here following is the example to make `DatabaseReference`:
+
+```
+let ref = DBRef.database.child("")
+```
+**Note:** For more detail visit [Firebase Console](https://firebase.google.com/docs/database/ios/lists-of-data)
+
 FirebaseServices.manager.database.add(object: object, toPath: "path/to/object") { result in
     // Handle the result
 }
@@ -112,7 +157,17 @@ FirebaseServices.manager.database.getList(Object.self, fromPath: "path/to/list")
 }
 
 // Observe changes to an object in the Firebase Realtime Database
-FirebaseServices.manager.database.observeObject(Object.self, atPath: "path/to/object") { result in
+FirebaseServices.manager.database.observeSingleObject(Object.self, atPath: "path/to/object") { result in
+    // Handle the result
+}
+
+// Observe changes to an list in the Firebase Realtime Database
+FirebaseServices.manager.database.observeList(Object.self, atPath: "path/to/object") { result in
+    // Handle the result
+}
+
+// Get an object in the Firebase Realtime Database
+FirebaseServices.manager.database.getSingleObject(Object.self, atPath: "path/to/object") { result in
     // Handle the result
 }
 
