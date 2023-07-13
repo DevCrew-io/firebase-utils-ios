@@ -140,12 +140,12 @@ Example usage:
 
 **Database path creation example**
 
-`DatabaseReference` is a class provided by the Firebase Realtime Database framework that represents a reference to a specific location in the database. It allows you to read, write, and listen to data at that particular location and its child nodes. Here following is the example to make `DatabaseReference`:
+`DatabaseReference` is a class provided by the Firebase Realtime Database framework that represents a reference to a specific location in the database. It allows you to read, write, and listen to data at that particular location and its child nodes. You follow the same pattern as Firebase realtime data does. Here following is the example to make `DatabaseReference`:
 
 ```
 let ref = DBRef.database.child("")
 ```
-**Note:** For more detail visit [Firebase Console](https://firebase.google.com/docs/database/ios/lists-of-data)
+For more detail visit [Firebase Console](https://firebase.google.com/docs/database/ios/lists-of-data)
 
 ```
 FirebaseServices.manager.database.add(object: object, toPath: "path/to/object") { result in
