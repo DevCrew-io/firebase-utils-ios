@@ -136,7 +136,6 @@ The `DatabaseService` class allows you to interact with the Firebase Realtime Da
 
 Example usage:
 
-```swift
 // Add an object to the Firebase Realtime Database
 
 **Database path creation example**
