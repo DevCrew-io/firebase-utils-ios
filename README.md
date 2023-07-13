@@ -36,6 +36,7 @@ import FirebaseServices
 ### Firebase Project Setup
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/), sign in with your Google account, create a new Firebase project or select an existing one and follow the steps mentioned by firebase to complete firebase configurations.
+
 Note: Ensure that the `GoogleService-Info.plist` file is included in your project's target and is present in your app's bundle during runtime.
 
 ### Initialisation
