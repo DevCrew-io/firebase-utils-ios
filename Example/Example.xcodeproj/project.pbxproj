@@ -49,7 +49,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1213F75C2A5C258000CD16B6 /* FirebaseServiceManager */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FirebaseServiceManager; path = ../../FirebaseServiceManager; sourceTree = "<group>"; };
 		1213F75F2A5EBF7800CD16B6 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		1213F7612A5EC09900CD16B6 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
 		123DFD9E2A5405F600D07C8C /* EmployeesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesListViewController.swift; sourceTree = "<group>"; };
@@ -74,6 +73,7 @@
 		12F446F22A556D0800A64694 /* EmployeesListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesListViewModel.swift; sourceTree = "<group>"; };
 		12F446F42A55953400A64694 /* SetEmployeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmployeeViewController.swift; sourceTree = "<group>"; };
 		12F446F62A559F3600A64694 /* SetEmployeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmployeeViewModel.swift; sourceTree = "<group>"; };
+		7790E14B2A65161600DA80FC /* firebase-utils-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "firebase-utils-ios"; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,7 +106,7 @@
 		12EF93672A52F08B00145904 = {
 			isa = PBXGroup;
 			children = (
-				1213F75C2A5C258000CD16B6 /* FirebaseServiceManager */,
+				7790E14B2A65161600DA80FC /* firebase-utils-ios */,
 				12EF93722A52F08B00145904 /* Example */,
 				12EF93892A52F08D00145904 /* ExampleTests */,
 				12EF93932A52F08D00145904 /* ExampleUITests */,
@@ -511,6 +511,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -540,6 +541,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
