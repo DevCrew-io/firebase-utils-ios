@@ -79,7 +79,7 @@ class EmployeesListViewModel {
     }
     private func observeDatabaseEmployees(completion: @escaping(_ error: Error?) -> ()) {
         let ref = DBRef.database.child("employees")
-        FirebaseServices.manager.database.observe(ref: ref, DBEmployee.self) { result in
+        FirebaseServices.manager.database.observeList(ref: ref, DBEmployee.self) { result in
             switch result {
             case .success(let employees):
                 self.dbEmployeesList = employees ?? []

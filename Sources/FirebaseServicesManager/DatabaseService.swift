@@ -68,8 +68,8 @@ public class DatabaseService {
     ///   - ref: The reference to the data node.
     ///   - type: The type of the objects to be observed, conforming to the `DatabaseNode` protocol.
     ///   - completion: The completion handler called with the result of the operation, containing the observed list of objects or an error.
-    public func observe<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
-        observeRequest(ref: ref, type, completion: completion)
+    public func observeList<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
+        observeListRequest(ref: ref, type, completion: completion)
     }
     
     /// Observes changes in a list of objects in the database.
@@ -210,7 +210,7 @@ public class DatabaseService {
         }
     }
     
-    private func observeRequest<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
+    private func observeListRequest<T: DatabaseNode>(ref: DatabaseReference, _ type: T.Type, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
         ref.observe(.value) { snapshot in
             if let dataSnapshot = snapshot.children.allObjects as? [DataSnapshot] {
                 var resultArray:[T] = []
@@ -233,7 +233,7 @@ public class DatabaseService {
     }
     
     private func observeSingleObjectRequest<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping(_ result: Result<T?, Error>) -> ()) {
-        ref.observeSingleEvent(of: eventType) { dataSnapshot  in
+        ref.observe(eventType) { dataSnapshot  in
             guard let value = dataSnapshot.value as? [String: Any] else {
                 return
             }

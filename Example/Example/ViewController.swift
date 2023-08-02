@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     @IBAction func operationButtonTapped(_ sender: UIButton) {
         switch (sender.tag) {
         case TappedButton.database.rawValue:
-            AppController.shared.operationType = .firestore
+            AppController.shared.operationType = .database
             AppController.shared.reactiveType = .observable
         case TappedButton.reactiveDatabase.rawValue:
             AppController.shared.operationType = .firestore
