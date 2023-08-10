@@ -66,7 +66,7 @@ class EmployeesListViewModel {
     }
     private func getDatabaseEmployees(completion: @escaping(_ error: Error?) -> ()) {
         let ref = DBRef.database.child("employees")
-        FirebaseServices.manager.database.getList(ref: ref, DBEmployee.self) { result in
+        FirebaseServices.manager.database.getList(ref: ref) { (result: Result<[DBEmployee]?, Error>)  in
             switch result {
             case .success(let employees):
                 self.dbEmployeesList = employees ?? []
@@ -79,7 +79,7 @@ class EmployeesListViewModel {
     }
     private func observeDatabaseEmployees(completion: @escaping(_ error: Error?) -> ()) {
         let ref = DBRef.database.child("employees")
-        FirebaseServices.manager.database.observeList(ref: ref, DBEmployee.self) { result in
+        let _ = FirebaseServices.manager.database.observeList(ref: ref) { (result:  Result<[DBEmployee]?, Error>) in
             switch result {
             case .success(let employees):
                 self.dbEmployeesList = employees ?? []
