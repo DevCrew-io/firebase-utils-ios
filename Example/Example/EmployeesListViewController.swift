@@ -55,7 +55,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let empDetailViewController = storyboard.instantiateViewController(withIdentifier: "EmployeeDetailViewController") as? EmployeeDetailViewController else { return }
-        empDetailViewController.empId = vm.employeesList[indexPath.row].docId
+        empDetailViewController.empId = AppController.shared.operationType == .firestore ?  vm.employeesList[indexPath.row].docId : vm.dbEmployeesList[indexPath.row].nodeId
         navigationController?.pushViewController(empDetailViewController, animated: true)
     }
     
@@ -67,11 +67,11 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapped))
         vm.fetchAllEmployees {[weak self] error in
+            guard let self = self else {return}
             if let error = error {
-                let alert = UIAlertController(title: "Alert!", message: error.localizedDescription, preferredStyle: .alert)
-                self?.present(alert, animated: true)
+                AppUtils.showAlert(message: error.localizedDescription, controller: self)
             } else {
-                self?.tableView.reloadData()
+                self.tableView.reloadData()
             }
         }
         

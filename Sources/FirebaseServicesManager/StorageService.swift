@@ -22,8 +22,8 @@ public class StorageService {
     ///   - name: The name of the file.
     ///   - folder: The folder path in Firebase Storage where the file should be uploaded.
     ///   - completion: A closure that gets called upon completion with the result of the operation.
-    public func upload(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) {
-        uploadRequest(file: data, with: name, in: folder, completion: completion)
+    public func upload(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask {
+        putRequest(file: data, with: name, in: folder, completion: completion)
     }
     
     /// Updates a file in the specified folder in Firebase Storage.
@@ -33,8 +33,8 @@ public class StorageService {
     ///   - name: The name of the file.
     ///   - folder: The folder path in Firebase Storage where the file is located.
     ///   - completion: A closure that gets called upon completion with the result of the operation.
-    public func update(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) {
-        updateRequest(file: data, with: name, in: folder, completion: completion)
+    public func update(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask {
+        return putRequest(file: data, with: name, in: folder, completion: completion)
     }
     
     /// Deletes a file from Firebase Storage.
@@ -46,8 +46,8 @@ public class StorageService {
         deleteRequest(file: path, colletion: colletion, completion: completion)
     }
     // MARK: - Private function -
-    private func uploadRequest(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) {
-        storage.child("\(folder)/\(name)").putData(data) {[weak self] metaData, error in
+    private func putRequest(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask {
+       return storage.child("\(folder)/\(name)").putData(data) {[weak self] metaData, error in
             if let error = error {
                 completion(.failure(error))
             } else {
@@ -60,20 +60,7 @@ public class StorageService {
             }
         }
     }
-    private func updateRequest(file data: Data, with name: String, in folder: String, completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) {
-        storage.child("\(folder)/\(name)").putData(data) {[weak self] metaData, error in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                self?.storage.child(metaData?.path ?? "").downloadURL(completion: { url, error in
-                    if let error = error {
-                        completion(.failure(error))
-                    } else {
-                        completion(.success((url?.absoluteString, metaData?.name)))                    }
-                })
-            }
-        }
-    }
+
     private func deleteRequest(file path: String, colletion: String, completion: @escaping (_ result: Result<Bool?, Error>) -> ()) {
         storage.child("\(colletion)/\(path)").delete { error in
             if let error = error {

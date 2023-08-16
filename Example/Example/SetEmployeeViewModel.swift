@@ -9,11 +9,19 @@ import Foundation
 import FirebaseServicesManager
 
 class SetEmployeeViewModel {
-    func add(employee: Employee, completion: @escaping(_ result: Result<Employee?, Error>) -> ()) {
-//        FirebaseServices.manager.firestore.add(documentAt: "employees", dataObject: employee) { result in
-//            completion(result)
-//        }
-//
+    func add(fsEmployee: FSEmployee, completion: @escaping(_ result: Result<FSEmployee?, Error>) -> ()) {
+        FirebaseServices.manager.firestore.add(documentAt: "employees", dataObject: fsEmployee) { result in
+            completion(result)
+        }
+    }
+    
+    func add(dbEmployee: DBEmployee, completion: @escaping(_ result: Result<DBEmployee?, Error>) -> ()) {
+        let ref = DBRef.database.child("employees").childByAutoId()
+        FirebaseServices.manager.database.add(ref: ref, dataObject: dbEmployee) { result in
+            completion(result)
+        }
+    }
+
         
 
 // // Create New Record
@@ -57,12 +65,18 @@ class SetEmployeeViewModel {
 //
 //        }
         
-    }
     
-    func update(empId: String, employee: Employee, completion: @escaping(_ result: Result<Employee?, Error>) -> ()) {
-        FirebaseServices.manager.firestore.update(with: empId, documentIn: "employees", dataObject: employee) { result in
+    func update(empId: String, fsEmployee: FSEmployee, completion: @escaping(_ result: Result<FSEmployee?, Error>) -> ()) {
+        FirebaseServices.manager.firestore.update(with: empId, documentIn: "employees", dataObject: fsEmployee) { result in
             completion(result)
             
+        }
+    }
+    
+    func update(id: String, dbEmployee: DBEmployee, completion: @escaping(_ result: Result<DBEmployee?, Error>) -> ()) {
+        let dbRef = DBRef.database.child("employees").child(id)
+        FirebaseServices.manager.database.update(ref: dbRef, dataObject: dbEmployee) { result in
+            completion(result)
         }
     }
     

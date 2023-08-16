@@ -87,6 +87,15 @@ public class DatabaseService {
         return observeListRequest(ref: ref, completion: completion)
     }
     
+    public func observeSingleObject<T: DatabaseNode>(ref: DatabaseReference, completion: @escaping (_ result: Result<T?, Error>) -> ()) -> UInt {
+        return observeSingleObjectRequest(ref: ref, eventType: .value, T.self, completion: completion)
+    }
+    
+    public func getData(ref: DatabaseReference, completion: @escaping(_ result: Result<DataSnapshot?, Error>) -> ()) {
+        getDataRequest(ref: ref, completion: completion)
+    }
+    
+    
     /// Observes changes in a list of objects in the database.
     ///
     /// - Parameters:
@@ -116,10 +125,9 @@ public class DatabaseService {
     
     // MARK: - Private Function -
     private func addRequest(ref: DatabaseReference, dataDic: [String: Any], completion: @escaping (Result<[String: Any]?, Error>) -> ()) {
-        let dbRef = ref.childByAutoId()
         var nodeDic = dataDic
         nodeDic.removeValue(forKey: DatabaseService.nodeId)
-        dbRef.setValue(nodeDic) { error, ref in
+        ref.setValue(nodeDic) { error, ref in
             guard let error = error else {
                 nodeDic[DatabaseService.nodeId] = ref.key
                 completion(.success(nodeDic))
@@ -130,10 +138,9 @@ public class DatabaseService {
     }
     
     private func addRequest<T: DatabaseNode>(ref: DatabaseReference, dataObject: T, completion: @escaping (Result<T?, Error>) -> ()) {
-        let dbRef = ref.childByAutoId()
         var nodeDic = dataObject.toDictionary() ?? [:]
         nodeDic.removeValue(forKey: DatabaseService.nodeId)
-        dbRef.setValue(nodeDic) { error, ref in
+        ref.setValue(nodeDic) { error, ref in
             guard let error = error else {
                 guard let data = try? JSONSerialization.data(withJSONObject: nodeDic) else {
                     completion(.success(nil))  // Empty result if unable to serialize raw data
@@ -203,6 +210,19 @@ public class DatabaseService {
         }
     }
     
+    private func getDataRequest(ref: DatabaseReference, completion: @escaping(_ result: Result<DataSnapshot?, Error>) -> ()) {
+        ref.getData( completion:  { error, snapshot in
+            if let error = error{
+                completion(.failure(error))
+                debugPrint(<#T##items: Any...##Any#>)
+                print(error.localizedDescription)
+                return
+            }
+            completion(.success(snapshot))
+            
+        })
+    }
+    
     private func getListRequest<T: DatabaseNode>(ref: DatabaseReference, completion: @escaping (_ result: Result<[T]?, Error>) -> ()) {
         ref.observeSingleEvent(of: .value) { snapshot in
             guard snapshot.exists() else {
@@ -254,7 +274,7 @@ public class DatabaseService {
         }
     }
     
-    private func observeSingleObjectRequest<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping(_ result: Result<T?, Error>) -> ())  -> UInt {
+    private func observeSingleObjectRequest<T: DatabaseNode>(ref: DatabaseReference, eventType: DataEventType, _ type: T.Type, completion: @escaping (_ result: Result<T?, Error>) -> ()) -> UInt {
         return ref.observe(eventType) { dataSnapshot  in
             guard let value = dataSnapshot.value as? [String: Any] else {
                 return

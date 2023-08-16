@@ -9,7 +9,7 @@ import Foundation
 import FirebaseServicesManager
 
 class EmployeesListViewModel {
-    var employeesList: [Employee] = []
+    var employeesList: [FSEmployee] = []
     var dbEmployeesList: [DBEmployee] = []
 
     func fetchAllEmployees(completion: @escaping(_ error: Error?) -> ()) {
@@ -40,7 +40,7 @@ class EmployeesListViewModel {
     
     private func getFirestoreEmployees(completion: @escaping(_ error: Error?) -> ()) {
         let query = FSQuery.firestore.collection("employees")
-        FirebaseServices.manager.firestore.getList(Employee.self, firestore: query) { result in
+        FirebaseServices.manager.firestore.getList(FSEmployee.self, firestore: query) { result in
             switch result {
             case .success(let employees):
                 self.employeesList = employees
@@ -53,7 +53,7 @@ class EmployeesListViewModel {
     }
     private func observeFirestoreEmployee(completion: @escaping(_ error: Error?) -> ()) {
         let query = FSQuery.firestore.collection("employees")
-        FirebaseServices.manager.firestore.observeDocuments(query: query, Employee.self) { result in
+        let _ = FirebaseServices.manager.firestore.observeDocuments(query: query, FSEmployee.self) { result in
             switch result {
             case .success(let employees):
                 self.employeesList = employees

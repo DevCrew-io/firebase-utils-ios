@@ -8,7 +8,8 @@
 import Foundation
 import FirebaseServicesManager
 
-struct Employee: FirestoreDocument {
+
+struct FSEmployee: FirestoreDocument {
     var docId: String?
     var name: String
     var picUrl: String?

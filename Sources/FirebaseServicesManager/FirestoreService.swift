@@ -28,7 +28,7 @@ public class FirestoreService {
     ///   - dataObject: Optional custom object conforming to `FirestoreDocument` that will be converted to a dictionary and added to the document. Default is `nil`.
     ///   - completion: A closure to be called when the operation is completed, containing a result of type `Result<T?, Error>`.
     public func add<T: FirestoreDocument>(documentAt collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?, Error>) -> ()) {
-        addRequest(documentAt: collectionPath, completion: completion)
+        addRequest(documentAt: collectionPath, dataDic: dataDic, dataObject: dataObject, completion: completion)
     }
     
     /// Retrieves a list of documents from Firestore based on the provided query.
@@ -58,8 +58,8 @@ public class FirestoreService {
     ///   - query: The Firestore query used to observe the collection.
     ///   - type: The type of the documents to observe, conforming to `FirestoreDocument`.
     ///   - completion: A closure to be called when changes occur, containing a result of type `Result<[T], Error>`.
-    public func observeDocuments<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) {
-        observeDocumentsRequest(query: query, type, completion: completion)
+    public func observeDocuments<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) -> ListenerRegistration {
+        return observeDocumentsRequest(query: query, type, completion: completion)
     }
     
     /// Observes changes to a specific document in Firestore based on the provided document ID and collection, and returns the document of type `T`.
@@ -69,8 +69,8 @@ public class FirestoreService {
     ///   - collection: The collection where the document resides.
     ///   - type: The type of the document to observe, conforming to `FirestoreDocument`.
     ///   - completion: A closure to be called when changes occur, containing a result of type `Result<T, Error>`.
-    public func observeDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) {
-        observeDocumentRequest(with: id, from: collection, type, completion: completion)
+    public func observeDocument<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) -> ListenerRegistration {
+        return observeDocumentRequest(with: id, from: collection, type, completion: completion)
     }
     
     /// Updates a document in Firestore with the provided ID and collection path, using either a dictionary or an object conforming to `FirestoreDocument`.
@@ -127,6 +127,7 @@ public class FirestoreService {
             }
         }
     }
+    
     private func getListRequest<T: FirestoreDocument>(_ type: T.Type, firestore query: Query, completion: @escaping(Result<[T], Error>) -> ()) {
         query.getDocuments { snapshot, error in
             if let error = error {
@@ -179,8 +180,9 @@ public class FirestoreService {
             }
         }
     }
-    private func observeDocumentsRequest<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) {
-        query.addSnapshotListener { snapshot, error in
+    
+    private func observeDocumentsRequest<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) -> ListenerRegistration {
+        return query.addSnapshotListener { snapshot, error in
             if let error = error {
                 completion(.failure(error))  // Handle the error if any
             } else if let snapshot = snapshot {
@@ -205,8 +207,9 @@ public class FirestoreService {
             }
         }
     }
-    private func observeDocumentRequest<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) {
-        firestore.collection(collection).document(id).addSnapshotListener { docSnap, error in
+    
+    private func observeDocumentRequest<T: FirestoreDocument>(with id: String, from collection: String, _ type: T.Type, completion: @escaping(Result<T?,Error>) -> ()) -> ListenerRegistration {
+        return firestore.collection(collection).document(id).addSnapshotListener { docSnap, error in
             if let error = error {
                 completion(.failure(error))  // Handle the error if any
             } else if let docSnap = docSnap, let rawObject = docSnap.data() {

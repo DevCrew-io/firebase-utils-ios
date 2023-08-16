@@ -9,8 +9,15 @@ import Foundation
 import FirebaseServicesManager
 
 class EmployeeDetailViewModel {
-    func fetchEmployeeDetails(empId: String, completion: @escaping(_ result: Result<Employee?, Error>) -> ()) {
-        FirebaseServices.manager.firestore.observeDocument(with: empId, from: "employees", Employee.self) { result in
+    func fetchFSEmployeeDetails(id: String, completion: @escaping(_ result: Result<FSEmployee?, Error>) -> ()) {
+        FirebaseServices.manager.firestore.observeDocument(with: id, from: "employees", FSEmployee.self) { result in
+            completion(result)
+        }
+    }
+    
+    func fetchDBEmployeeDetails(id: String, completion: @escaping(_ result: Result<DBEmployee?, Error>) -> ()) {
+        let ref = DBRef.database.child("employees").child(id)
+        _ = FirebaseServices.manager.database.observeSingleObject(ref: ref) { (result: Result<DBEmployee?, Error>) in
             completion(result)
         }
     }
