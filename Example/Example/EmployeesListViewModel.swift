@@ -2,7 +2,7 @@
 //  EmployeesListViewModel.swift
 //  Example
 //
-//  Created by Maaz Rafique on 05/07/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation

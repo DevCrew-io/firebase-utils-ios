@@ -2,7 +2,7 @@
 //  AppUtils.swift
 //  Example
 //
-//  Created by Maaz Rafique on 11/08/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import UIKit
