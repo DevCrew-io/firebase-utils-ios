@@ -214,7 +214,6 @@ public class DatabaseService {
         ref.getData( completion:  { error, snapshot in
             if let error = error{
                 completion(.failure(error))
-                debugPrint(<#T##items: Any...##Any#>)
                 print(error.localizedDescription)
                 return
             }
