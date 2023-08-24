@@ -2,13 +2,14 @@
 //  Employee.swift
 //  Example
 //
-//  Created by Maaz Rafique on 04/07/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation
 import FirebaseServicesManager
 
-struct Employee: FirestoreDocument {
+
+struct FSEmployee: FirestoreDocument {
     var docId: String?
     var name: String
     var picUrl: String?

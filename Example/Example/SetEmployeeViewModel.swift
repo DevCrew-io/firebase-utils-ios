@@ -2,23 +2,81 @@
 //  SetEmployeeViewModel.swift
 //  Example
 //
-//  Created by Maaz Rafique on 05/07/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation
 import FirebaseServicesManager
 
 class SetEmployeeViewModel {
-    func add(employee: Employee, completion: @escaping(_ result: Result<Employee?, Error>) -> ()) {
-        FirebaseServices.manager.firestore.add(documentAt: "employees", dataObject: employee) { result in
+    func add(fsEmployee: FSEmployee, completion: @escaping(_ result: Result<FSEmployee?, Error>) -> ()) {
+        FirebaseServices.manager.firestore.add(documentAt: "employees", dataObject: fsEmployee) { result in
             completion(result)
         }
     }
     
-    func update(empId: String, employee: Employee, completion: @escaping(_ result: Result<Employee?, Error>) -> ()) {
-        FirebaseServices.manager.firestore.update(with: empId, documentIn: "employees", dataObject: employee) { result in
+    func add(dbEmployee: DBEmployee, completion: @escaping(_ result: Result<DBEmployee?, Error>) -> ()) {
+        let ref = DBRef.database.child("employees").childByAutoId()
+        FirebaseServices.manager.database.add(ref: ref, dataObject: dbEmployee) { result in
+            completion(result)
+        }
+    }
+
+        
+
+// // Create New Record
+//        let model = DBEmployee(name: "Najam", jobTitle: "Sr, Software Engineer", department: "Mobile Development")
+//        FirebaseServices.manager.database.add(path: DBRef.database.child("Users"), dataObject: model) { (result) in
+//
+//            switch result {
+//            case .success(let response):
+//                print(response)
+//            case .failure(let error):
+//                print(error)
+//            }
+//
+//        }
+        
+        
+        // // Update Record
+//        var model = DBEmployee(name: "Najam", jobTitle: "Sr, Software Engineer", department: "Mobile Development")
+//        model.nodeId = "ABVCGGSUD"
+//        FirebaseServices.manager.database.update(ref: DBRef.database.child("-N_YGZsLg_dAZFYTLyDs"), dataObject: model) { result in
+//
+//            switch result {
+//            case .success(let response):
+//                print(response)
+//            case .failure(let error):
+//                print(error)
+//            }
+//
+//        }
+        
+        
+        // // Fetch List
+//        FirebaseServices.manager.database.getList(ref: DBRef.database) { (result: Result<[DBEmployee]?, Error>) in
+//
+//            switch result {
+//            case .success(let response):
+//                print(response)
+//            case .failure(let error):
+//                print(error)
+//            }
+//
+//        }
+        
+    
+    func update(empId: String, fsEmployee: FSEmployee, completion: @escaping(_ result: Result<FSEmployee?, Error>) -> ()) {
+        FirebaseServices.manager.firestore.update(with: empId, documentIn: "employees", dataObject: fsEmployee) { result in
             completion(result)
             
+        }
+    }
+    
+    func update(id: String, dbEmployee: DBEmployee, completion: @escaping(_ result: Result<DBEmployee?, Error>) -> ()) {
+        let dbRef = DBRef.database.child("employees").child(id)
+        FirebaseServices.manager.database.update(ref: dbRef, dataObject: dbEmployee) { result in
+            completion(result)
         }
     }
     

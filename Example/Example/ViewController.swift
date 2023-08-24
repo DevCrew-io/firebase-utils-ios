@@ -2,14 +2,14 @@
 //  ViewController.swift
 //  Example
 //
-//  Created by Maaz Rafique on 03/07/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import UIKit
 import FirebaseServicesManager
 
 class ViewController: UIViewController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -18,29 +18,39 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
     }
-
+    
+    
     @IBAction func operationButtonTapped(_ sender: UIButton) {
-        switch (sender.tag) {
-        case TappedButton.database.rawValue:
-            AppController.shared.operationType = .firestore
-            AppController.shared.reactiveType = .observable
-        case TappedButton.reactiveDatabase.rawValue:
-            AppController.shared.operationType = .firestore
-            AppController.shared.reactiveType = .nonObservable
-        case TappedButton.firestore.rawValue:
-            AppController.shared.operationType = .firestore
-            AppController.shared.reactiveType = .nonObservable
-        case TappedButton.reactiveFirestore.rawValue:
-            AppController.shared.operationType = .firestore
-            AppController.shared.reactiveType = .nonObservable
+        guard let tappedButton = TappedButton(rawValue: sender.tag) else { return }
+        
+        let appController = AppController.shared
+        var operationType: OperationType = .database
+        var reactiveType: ReactiveType = .observable
+        
+        
+        
+        switch tappedButton {
+        case .reactiveDatabase, .reactiveFirestore:
+            reactiveType = .nonObservable
         default:
             break
         }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let listViewController = storyboard.instantiateViewController(withIdentifier: "ListViewController") as? ListViewController else {return}
-
-        navigationController?.pushViewController(listViewController, animated: true)
-         
+        
+        switch tappedButton {
+        case .reactiveDatabase, .database:
+            operationType = .database
+        case .reactiveFirestore, .firestore:
+            operationType = .firestore
+        }
+        
+        appController.operationType = operationType
+        appController.reactiveType = reactiveType
+        
+        if let listViewController = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "ListViewController") as? ListViewController {
+            navigationController?.pushViewController(listViewController, animated: true)
+        }
+        
     }
     
 }
