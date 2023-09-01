@@ -2,15 +2,20 @@
 //  FirestoreDocument.swift
 //
 //
-//  Created by Maaz Rafique on 03/05/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation
+
+public enum DocumentChangeType: Codable {
+case added, modified, removed
+}
 
 /// Protocol for representing a document in Firestore.
 public protocol FirestoreDocument: Codable {
     /// The document ID associated with the Firestore document.
     var docId: String? { get set }
+    var docChangeType: DocumentChangeType? {get set}
 }
 
 extension FirestoreDocument {
@@ -18,6 +23,11 @@ extension FirestoreDocument {
     var docId: String? {
         get { return nil }  // Returns nil by default
         set {}  // Empty setter to satisfy the protocol requirement
+    }
+    
+    var docChangeType: DocumentChangeType? {
+        get {return nil}
+        set {}
     }
 }
 

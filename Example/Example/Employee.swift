@@ -10,6 +10,7 @@ import FirebaseServicesManager
 
 
 struct FSEmployee: FirestoreDocument {
+    var docChangeType: FirebaseServicesManager.DocumentChangeType?
     var docId: String?
     var name: String
     var picUrl: String?

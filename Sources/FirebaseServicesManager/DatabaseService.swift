@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by Maaz Rafique on 07/07/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation
@@ -87,10 +87,20 @@ public class DatabaseService {
         return observeListRequest(ref: ref, completion: completion)
     }
     
+    /// Observes changes in a object in the database.
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - completion: The completion handler called with the result of the operation, containing the observed list of objects or an error.
     public func observeSingleObject<T: DatabaseNode>(ref: DatabaseReference, completion: @escaping (_ result: Result<T?, Error>) -> ()) -> UInt {
         return observeSingleObjectRequest(ref: ref, eventType: .value, T.self, completion: completion)
     }
     
+    /// get data method fetch list or single object from database
+    ///
+    /// - Parameters:
+    ///   - ref: The reference to the data node.
+    ///   - completion: The completion handler called with the result of the operation, containing an error if failed to remove.
     public func getData(ref: DatabaseReference, completion: @escaping(_ result: Result<DataSnapshot?, Error>) -> ()) {
         getDataRequest(ref: ref, completion: completion)
     }

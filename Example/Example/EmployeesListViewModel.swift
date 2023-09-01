@@ -55,6 +55,29 @@ class EmployeesListViewModel {
         let query = FSQuery.firestore.collection("employees")
         let _ = FirebaseServices.manager.firestore.observeDocuments(query: query, FSEmployee.self) { result in
             switch result {
+            case .success(let employee):
+                guard let emp = employee else {return}
+                switch emp.docChangeType {
+                case .added:
+                    self.employeesList.append(emp)
+                case .modified:
+                    if let index = self.employeesList.firstIndex(where: {$0.docId == emp.docId}) {
+                        self.employeesList[index] = emp
+                    }
+                case .removed:
+                    if let index = self.employeesList.firstIndex(where: {$0.docId == emp.docId}) {
+                        self.employeesList.remove(at: index)
+                    }
+                case .none:
+                    break
+                }
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+                
+            }
+        } listCompletion: { result in
+            switch result {
             case .success(let employees):
                 self.employeesList = employees
                 completion(nil)
@@ -63,6 +86,7 @@ class EmployeesListViewModel {
                 
             }
         }
+
     }
     private func getDatabaseEmployees(completion: @escaping(_ error: Error?) -> ()) {
         let ref = DBRef.database.child("employees")

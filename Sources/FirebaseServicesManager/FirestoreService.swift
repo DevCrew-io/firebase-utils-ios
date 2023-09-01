@@ -2,7 +2,7 @@
 //  File.swift
 //
 //
-//  Created by Maaz Rafique on 03/05/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation
@@ -58,8 +58,8 @@ public class FirestoreService {
     ///   - query: The Firestore query used to observe the collection.
     ///   - type: The type of the documents to observe, conforming to `FirestoreDocument`.
     ///   - completion: A closure to be called when changes occur, containing a result of type `Result<[T], Error>`.
-    public func observeDocuments<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) -> ListenerRegistration {
-        return observeDocumentsRequest(query: query, type, completion: completion)
+    public func observeDocuments<T: FirestoreDocument>(query: Query, _ type: T.Type, singleCompletion: @escaping(Result<T?, Error>) -> (), listCompletion: @escaping(Result<[T], Error>) -> ()) -> ListenerRegistration {
+        return observeDocumentsRequest(query: query, type,singleObjectCompletion: singleCompletion, listCompletion: listCompletion)
     }
     
     /// Observes changes to a specific document in Firestore based on the provided document ID and collection, and returns the document of type `T`.
@@ -81,8 +81,34 @@ public class FirestoreService {
     ///   - dataDic: Optional. A dictionary containing the updated data to be applied to the document.
     ///   - dataObject: Optional. An object conforming to `FirestoreDocument` that will be converted to a dictionary to update the document.
     ///   - completion: A closure to be called upon completion of the update operation, containing a result of type `Result<T?, Error>`.
+    private func setData<T: FirestoreDocument>(documentAt collectionPath: String, with id: String, dataDic: [String: Any]? = nil, dataObject: T? = nil,with merge: Bool = false, completion: @escaping(Result<T?, Error>) -> ()) {
+        setDataRequest(documentAt: collectionPath, with: id, dataDic: dataDic, dataObject: dataObject, merge: merge, completion: completion)
+    }
+    
+    /// Updates  or adds a document in Firestore, using either a dictionary or an custom object confirming
+    ///
+    /// - Parameters:
+    ///   - collectionPath: The path of the collection where the document resides.
+    ///   - dataDic: Optional. A dictionary containing the updated data to be applied to the document.
+    ///   - dataObject: Optional. An object conforming to `FirestoreDocument` that will be converted to a dictionary to update the document.
+    ///   - merge: Boolen if you want to merge in current document otherwise it would be override current object with passed object
+    ///   - completion: A closure to be called upon completion of the update operation, containing a result of type `Result<T?, Error>`.
+    ///
+    private func setData<T: FirestoreDocument>(documentAt collectionPath: String, with id: String, dataDic: [String: Any]? = nil, dataObject: T? = nil,with mergeFields: [Any] = [], completion: @escaping(Result<T?, Error>) -> ()) {
+        setDataRequest(documentAt: collectionPath, with: id, dataDic: dataDic, dataObject: dataObject, mergeFields: mergeFields, completion: completion)
+    }
+  
+    /// Updates  or adds a document in Firestore, using either a dictionary or an custom object confirming
+    ///
+    /// - Parameters:
+    ///   - collectionPath: The path of the collection where the document resides.
+    ///   - dataDic: Optional. A dictionary containing the updated data to be applied to the document.
+    ///   - dataObject: Optional. An object conforming to `FirestoreDocument` that will be converted to a dictionary to update the document.
+    ///   - mergeFields: Optionl. An array of keys you want to merge in current document
+    ///   - completion: A closure to be called upon completion of the update operation, containing a result of type `Result<T?, Error>`.
+
     public func update<T: FirestoreDocument>(with id: String, documentIn collectionPath: String, dataDic: [String: Any]? = nil, dataObject: T? = nil, completion: @escaping(Result<T?,Error>) -> ()) {
-        updateRequest(with: id, documentIn: collectionPath, completion: completion)
+        updateRequest(with: id, documentIn: collectionPath, dataDic: dataDic, dataObject: dataObject, completion: completion)
     }
     
     /// Deletes a document from Firestore with the provided ID and collection path.
@@ -113,6 +139,81 @@ public class FirestoreService {
                 completion(.failure(err))  // Handle the error if any
             } else {
                 guard let docId = ref?.documentID else {
+                    completion(.success(nil))
+                    return
+                }
+                
+                guard var dataObject = dataObject else {
+                    completion(.success(nil))
+                    return
+                }
+                
+                dataObject.docId = docId  // Set the document ID for the data object
+                completion(.success(dataObject))  // Completion handler with the added document
+            }
+        }
+    }
+    
+    private func setDataRequest<T: FirestoreDocument>(documentAt collectionPath: String, with id: String? = nil, dataDic: [String: Any]? = nil, dataObject: T? = nil, merge: Bool = false, completion: @escaping(Result<T?, Error>) -> ()) {
+            
+        var fsRef: DocumentReference?
+        if let id = id {
+            fsRef = firestore.collection(collectionPath).document(id)  // Reference to the collection
+        } else {
+            fsRef = firestore.collection(collectionPath).document()
+        }
+        var documentDic: [String: Any]?
+        
+        // Check if data is provided as a dictionary or a custom object
+        if let dataDic = dataDic {
+            documentDic = dataDic
+        } else if let dataObject = dataObject {
+            documentDic = dataObject.toDictionary()
+        }
+        
+        // Add the document to the collection
+        fsRef?.setData(documentDic ?? [:], merge: merge) { err in
+            if let err = err {
+                completion(.failure(err))  // Handle the error if any
+            } else {
+                guard let docId = fsRef?.documentID else {
+                    completion(.success(nil))
+                    return
+                }
+                
+                guard var dataObject = dataObject else {
+                    completion(.success(nil))
+                    return
+                }
+                
+                dataObject.docId = docId  // Set the document ID for the data object
+                completion(.success(dataObject))  // Completion handler with the added document
+            }
+        }
+    }
+    
+    private func setDataRequest<T: FirestoreDocument>(documentAt collectionPath: String, with id: String? = nil, dataDic: [String: Any]? = nil, dataObject: T? = nil,mergeFields: [Any] = [], completion: @escaping(Result<T?, Error>) -> ()) {
+        var fsRef: DocumentReference?
+        if let id = id {
+            fsRef = firestore.collection(collectionPath).document(id)  // Reference to the collection
+        } else {
+            fsRef = firestore.collection(collectionPath).document()
+        }// Reference to the collection
+        var documentDic: [String: Any]?
+        
+        // Check if data is provided as a dictionary or a custom object
+        if let dataDic = dataDic {
+            documentDic = dataDic
+        } else if let dataObject = dataObject {
+            documentDic = dataObject.toDictionary()
+        }
+        
+        // Add the document to the collection
+        fsRef?.setData(documentDic ?? [:], mergeFields: mergeFields) { err in
+            if let err = err {
+                completion(.failure(err))  // Handle the error if any
+            } else {
+                guard let docId = fsRef?.documentID else {
                     completion(.success(nil))
                     return
                 }
@@ -181,29 +282,43 @@ public class FirestoreService {
         }
     }
     
-    private func observeDocumentsRequest<T: FirestoreDocument>(query: Query, _ type: T.Type, completion: @escaping(Result<[T], Error>) -> ()) -> ListenerRegistration {
+    private func observeDocumentsRequest<T: FirestoreDocument>(query: Query, _ type: T.Type, singleObjectCompletion: @escaping(Result<T?, Error>) -> (), listCompletion: @escaping(Result<[T], Error>) -> ()) -> ListenerRegistration {
         return query.addSnapshotListener { snapshot, error in
             if let error = error {
-                completion(.failure(error))  // Handle the error if any
+                listCompletion(.failure(error))  // Handle the error if any
             } else if let snapshot = snapshot {
                 guard !snapshot.documents.isEmpty else {
-                    completion(.success([]))  // Empty result if there are no documents
+                    listCompletion(.success([]))  // Empty result if there are no documents
                     return
                 }
-                
-                let documents = snapshot.documents
-                let parsedData: [T] = documents.compactMap {
+                let docChangeTypes: [T] = snapshot.documentChanges.compactMap { docChange in
+                    var docChangeType = DocumentChangeType.added
+                    switch docChange.type {
+                    case .added:
+                        docChangeType = .added
+                    case .modified:
+                        docChangeType = .modified
+                    case .removed:
+                        docChangeType = .removed
+                    }
+                    
                     do {
-                        let data = try JSONSerialization.data(withJSONObject: $0.data(), options: [])
+                        let data = try JSONSerialization.data(withJSONObject: docChange.document.data(), options: [])
                         var parsedObject = try JSONDecoder().decode(type, from: data)
-                        parsedObject.docId = $0.documentID
+                        parsedObject.docId = docChange.document.documentID
+                        parsedObject.docChangeType = docChangeType
                         return parsedObject
                     } catch {
-                        return nil  // Skip document if decoding fails
+                        return nil
                     }
                 }
-                
-                completion(.success(parsedData))  // Completion handler with the parsed documents
+                print("docChangeType",snapshot.documentChanges.count)
+
+                if snapshot.documents.count == docChangeTypes.count {
+                    listCompletion(.success(docChangeTypes))  // Completion handler with the parsed documents
+                } else {
+                    singleObjectCompletion(.success(docChangeTypes.first))
+                }
             }
         }
     }
@@ -244,6 +359,7 @@ public class FirestoreService {
             }
         }
     }
+    
     private func deleteRequest(id: String, documentAt collectionPath: String, completion: @escaping(Result<Bool,Error>) -> ()) {
         let fsRef = firestore.collection(collectionPath).document(id)
         
