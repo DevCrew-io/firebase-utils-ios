@@ -10,7 +10,7 @@ import FirebaseServicesManager
 
 class EmployeeDetailViewModel {
     func fetchFSEmployeeDetails(id: String, completion: @escaping(_ result: Result<FSEmployee?, Error>) -> ()) {
-        FirebaseServices.manager.firestore.observeDocument(with: id, from: "employees", FSEmployee.self) { result in
+        let _ = FirebaseServices.manager.firestore.observeDocument(with: id, from: "employees", FSEmployee.self) { result in
             completion(result)
         }
     }

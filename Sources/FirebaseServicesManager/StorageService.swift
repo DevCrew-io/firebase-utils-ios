@@ -148,7 +148,7 @@ public class StorageService {
         ///   - completion: A closure that gets called upon completion with the result of the operation.
     public func deleteMetadata(for path: String, completion: @escaping(_ result: Result<StorageMetadata?, Error>) -> ()) {
         
-        var metaData = StorageMetadata()
+        let metaData = StorageMetadata()
 
         updateMetaDataRequest(file: metaData, for: path, completion: completion)
     }
