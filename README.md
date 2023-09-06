@@ -68,121 +68,284 @@ The FirebaseServices framework provides the following services:
 
 ### FirestoreService
 
-The `FirestoreService` class allows you to interact with Firestore and perform various operations such as adding documents, retrieving lists of documents, observing document changes, updating documents, and deleting documents.
-
-Example usage:
+The `FirestoreService` class is included within this package and is used for handling Firebase Firestore operations. Here's how you can use it:
 
 ```swift
-// Add a document to a collection
-FirebaseServices.manager.firestore.add(documentAt: "collectionPath", dataDic: dataDic) { result in
-    // Handle the result
-}
-// Update a document
-FirebaseServices.manager.firestore.update(with: "documentID", documentIn: "collectionPath", dataDic: dataDic) { result in
-    // Handle the result
+// Example usage of FirestoreService
+// Adding a document to the specified collection
+FirebaseServices.manager.firestore.add(documentAt: yourCollectionPath, dataDic: yourDataDictionary) { result in
+    switch result {
+    case .success(let addedDocument):
+        // Handle success
+        print("Document added: \(addedDocument ?? nil)")
+    case .failure(let error):
+        // Handle error
+        print("Error adding document: \(error)")
+    }
 }
 
-// Delete a document
-FirebaseServices.manager.firestore.delete(id: "documentID", documentAt: "collectionPath") { result in
-    // Handle the result
+// Retrieving a list of documents based on the provided query
+FirebaseServices.manager.firestore.getList(YourFirestoreDocument.self, firestore: yourQuery) { result in
+    switch result {
+    case .success(let documents):
+        // Handle success
+        print("Retrieved documents: \(documents)")
+    case .failure(let error):
+        // Handle error
+        print("Error retrieving documents: \(error)")
+    }
+}
+
+// Retrieving a specific document from Firestore
+FirebaseServices.manager.firestore.getDocument(with: documentId, from: yourCollection, YourFirestoreDocument.self) { result in
+    switch result {
+    case .success(let document):
+        // Handle success
+        print("Retrieved document: \(document ?? nil)")
+    case .failure(let error):
+        // Handle error
+        print("Error retrieving document: \(error)")
+    }
+}
+
+// Observing changes to a collection based on the provided query
+let observerHandle = FirebaseServices.manager.firestore.observeDocuments(query: yourQuery, YourFirestoreDocument.self) { result in
+    switch result {
+    case .success(let documents):
+        // Handle success
+        print("Observed documents: \(documents)")
+    case .failure(let error):
+        // Handle error
+        print("Error observing documents: \(error)")
+    }
+}
+
+// Removing an observer
+FirebaseServices.manager.firestore.removeObserver(handle: observerHandle)
+
+// Updating a document in Firestore
+FirebaseServices.manager.firestore.update(with: documentId, documentIn: yourCollection, dataDic: updatedDataDictionary) { result in
+    switch result {
+    case .success(let updatedDocument):
+        // Handle success
+        print("Document updated: \(updatedDocument ?? nil)")
+    case .failure(let error):
+        // Handle error
+        print("Error updating document: \(error)")
+    }
+}
+
+// Deleting a document from Firestore
+FirebaseServices.manager.firestore.delete(id: documentId, documentAt: yourCollectionPath) { result in
+    switch result {
+    case .success(let deleted):
+        // Handle success
+        print("Document deleted: \(deleted)")
+    case .failure(let error):
+        // Handle error
+        print("Error deleting document: \(error)")
+    }
 }
 ```
 
-###  With query example
+Similarly, all other methods can be used as per your need. To see all exposed methods/actions available in the package by navigating to `FirestoreService` class.
 
-**Query Creation example**
-```
- let query = FSQuery.firestore.collection("collection name")
-```
+#### Note:
 
-```
-// Retrieve a list of documents
-FirebaseServices.manager.firestore.getList(Object.self, firestore: query) { result in
-    // Handle the result
-}
+To create `FirestoreQuery`, use ```FSQuery.firestore``` followed by your database path for example:
 
-// Observe changes to a collection
-FirebaseServices.manager.firestore.observeDocuments(query: query, Object.self) { result in
-    // Handle the result
-}
-```
+```let firestoreQuery = FSQuery.firestore.collection("collectionPath")```
 
 ### StorageService
 
-The `StorageService` class allows you to interact with Firebase Storage and perform operations such as uploading, updating, and deleting files.
-
-Example usage:
+The `StorageService` class is used for handling Firebase Storage operations. Here's how you can use it:
 
 ```swift
-// Upload a file to Firebase Storage
-FirebaseServices.manager.storage.upload(file: data, with: "fileName", in: "folderPath") { result in
-    // Handle the result
+// Example usage of StorageService
+// Uploading a file to Firebase Storage
+let data = ... // Your file data
+let name = "example.jpg"
+let folder = "images"
+let metaData = StorageMetadata()
+FirebaseServices.manager.storage.upload(file: data, with: name, in: folder, metaData: metaData, progressCompletion: { progress in
+    // Handle progress updates
+}, completion: { result in
+    switch result {
+    case .success(let urls):
+        // Handle success
+        print("File uploaded successfully. URLs: \(urls)")
+    case .failure(let error):
+        // Handle error
+        print("Error uploading file: \(error)")
+    }
+})
+
+// Downloading data from Firebase Storage
+let path = "images/example.jpg"
+FirebaseServices.manager.storage.downloadData(from: path, progressCompletion: { progress in
+    // Handle progress updates
+}, completion: { result in
+    switch result {
+    case .success(let data):
+        // Handle success
+        print("Downloaded data: \(data)")
+    case .failure(let error):
+        // Handle error
+        print("Error downloading data: \(error)")
+    }
+})
+
+// Deleting a file from Firebase Storage
+FirebaseServices.manager.storage.delete(file: "example.jpg", colletion: "images") { result in
+    switch result {
+    case .success(let deleted):
+        // Handle success
+        if let deleted = deleted, deleted {
+            print("File deleted successfully.")
+        } else {
+            print("File does not exist.")
+        }
+    case .failure(let error):
+        // Handle error
+        print("Error deleting file: \(error)")
+    }
 }
 
-// Update a file in Firebase Storage
-FirebaseServices.manager.storage.update(file: data, with: "fileName", in: "folderPath") { result in
-    // Handle the result
-}
+// Other available functions:
 
-// Delete a file from Firebase Storage
-FirebaseServices.manager.storage.delete(file: "filePath", collection: "collectionPath") { result in
-    // Handle the result
-}
+// - upload(file: Data, with name: String, in folder: String, metaData: StorageMetadata?, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask
+// - update(file: Data, with name: String, in folder: String, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask
+// - upload(file: URL, with name: String, in folder: String, metaData: StorageMetadata?, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask
+// - update(file: URL, with name: String, in folder: String, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask
+// - downloadData(from path: String, size: Int64 = Int64.max, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<Data?, Error>) -> Void) -> StorageDownloadTask
+// - downloadFile(from path: String, to localURL: URL, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<URL?, Error>) -> Void) -> StorageDownloadTask
+// - downloadURL(for path: String, completion: @escaping (_ result:  Result<URL?, Error>) -> Void)
 ```
 
 ### DatabaseService
 
-The `DatabaseService` class allows you to interact with the Firebase Realtime Database and perform operations such as adding objects, retrieving lists of objects, observing object changes, updating objects, and deleting objects.
+The `DatabaseService` class is included within this package and is used for handling Firebase Realtime Database operations. Here's how you can use it:
 
-Example usage:
+```swift
+// Example usage of DatabaseService
 
-// Add an object to the Firebase Realtime Database
+// Adding data to the database
+FirebaseServices.manager.database.add(ref: yourDatabaseReference, dataDic: yourDataDictionary) { result in
+    switch result {
+    case .success(let addedData):
+        // Handle success
+        print("Data added: \(addedData ?? [:])")
+    case .failure(let error):
+        // Handle error
+        print("Error adding data: \(error)")
+    }
+}
 
-**Database path creation example**
+// Adding data using a custom object conforming to the `DatabaseNode` protocol
+FirebaseServices.manager.database.add(ref: yourDatabaseReference, dataObject: yourCustomObject) { result in
+    switch result {
+    case .success(let addedObject):
+        // Handle success
+        if let addedObject = addedObject {
+            print("Object added: \(addedObject)")
+        } else {
+            print("Object not added.")
+        }
+    case .failure(let error):
+        // Handle error
+        print("Error adding object: \(error)")
+    }
+}
 
-`DatabaseReference` is a class provided by the Firebase Realtime Database framework that represents a reference to a specific location in the database. It allows you to read, write, and listen to data at that particular location and its child nodes. You follow the same pattern as Firebase realtime data does. Here following is the example to make `DatabaseReference`:
+// Updating data in the database
+FirebaseServices.manager.database.update(ref: yourDatabaseReference, dataDic: updatedDataDictionary) { result in
+    switch result {
+    case .success(let updatedData):
+        // Handle success
+        print("Data updated: \(updatedData ?? [:])")
+    case .failure(let error):
+        // Handle error
+        print("Error updating data: \(error)")
+    }
+}
 
+// Updating data using a custom object conforming to the `DatabaseNode` protocol
+FirebaseServices.manager.database.update(ref: yourDatabaseReference, dataObject: updatedCustomObject) { result in
+    switch result {
+    case .success(let updatedObject):
+        // Handle success
+        if let updatedObject = updatedObject {
+            print("Object updated: \(updatedObject)")
+        } else {
+            print("Object not updated.")
+        }
+    case .failure(let error):
+        // Handle error
+        print("Error updating object: \(error)")
+    }
+}
+
+// Retrieving a single object from the database
+FirebaseServices.manager.database.getSingleObject(ref: yourDatabaseReference) { result in
+    switch result {
+    case .success(let object):
+        // Handle success
+        if let object = object {
+            print("Retrieved object: \(object)")
+        } else {
+            print("Object not found.")
+        }
+    case .failure(let error):
+        // Handle error
+        print("Error retrieving object: \(error)")
+    }
+}
+
+// Retrieving a list of objects from the database
+FirebaseServices.manager.database.getList(ref: yourDatabaseReference) { result in
+    switch result {
+    case .success(let objects):
+        // Handle success
+        if let objects = objects {
+            print("Retrieved objects: \(objects)")
+        } else {
+            print("No objects found.")
+        }
+    case .failure(let error):
+        // Handle error
+        print("Error retrieving objects: \(error)")
+    }
+}
+
+// Observing changes in a list of objects in the database
+let observerHandle = FirebaseServices.manager.database.observeList(ref: yourDatabaseReference) { result in
+    switch result {
+    case .success(let objects):
+        // Handle success
+        if let objects = objects {
+            print("Observed objects: \(objects)")
+        } else {
+            print("No objects observed.")
+        }
+    case .failure(let error):
+        // Handle error
+        print("Error observing objects: \(error)")
+    }
+}
+
+// Removing an observer
+databaseService.removeObserver(ref: yourDatabaseReference, handle: observerHandle)
+
+// Removing all registered observers
+databaseService.removeAllObservers(ref: yourDatabaseReference)
 ```
-let ref = DBRef.database.child("")
-```
-For more detail visit [Firebase Console](https://firebase.google.com/docs/database/ios/lists-of-data)
+Similarly, all other methods can be used as per your need. To see all exposed methods/actions available in the package by navigating to `DatabaseService` class.
 
-```
-FirebaseServices.manager.database.add(object: object, toPath: "path/to/object") { result in
-    // Handle the result
-}
+#### Note:
 
-// Retrieve a list of objects from the Firebase Realtime Database
-FirebaseServices.manager.database.getList(Object.self, fromPath: "path/to/list") { result in
-    // Handle the result
-}
+To create `DatabaseReference`, use ```DBRef.database``` followed by your database path for example:
 
-// Observe changes to an object in the Firebase Realtime Database
-FirebaseServices.manager.database.observeSingleObject(Object.self, atPath: "path/to/object") { result in
-    // Handle the result
-}
-
-// Observe changes to an list in the Firebase Realtime Database
-FirebaseServices.manager.database.observeList(Object.self, atPath: "path/to/object") { result in
-    // Handle the result
-}
-
-// Get an object in the Firebase Realtime Database
-FirebaseServices.manager.database.getSingleObject(Object.self, atPath: "path/to/object") { result in
-    // Handle the result
-}
-
-// Update an object in the Firebase Realtime Database
-FirebaseServices.manager.database.update(object: object, atPath: "path/to/object") { result in
-    // Handle the result
-}
-
-// Delete an object from the Firebase Realtime Database
-FirebaseServices.manager.database.deleteObject(atPath: "path/to/object") { result in
-    // Handle the result
-}
-```
-
+```let databaseReference = DBRef.database.child("your path")```
 
 ## Author
 [DevCrew.IO](https://devcrew.io/)
