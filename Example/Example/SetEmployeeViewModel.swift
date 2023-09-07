@@ -81,15 +81,20 @@ class SetEmployeeViewModel {
     }
     
     func uploadProfileImage(imageData: Data, name: String, folder: String, completion: @escaping(_ result: Result<(String?, String?), Error>) -> ()) {
-        FirebaseServices.manager.storage.upload(file: imageData, with: name, in: folder) { result in
+        let _ = FirebaseServices.manager.storage.upload(file: imageData, with: name, in: folder, metaData: nil) { progress in
+            print(progress)
+        } completion: { result in
             completion(result)
         }
     }
     
     func updateProfileImage(imageData: Data, name: String, folder: String, completion: @escaping(_ result: Result<(String?, String?), Error>) -> ()) {
-        FirebaseServices.manager.storage.update(file: imageData, with: name, in: folder) { result in
+        let _ = FirebaseServices.manager.storage.update(file: imageData, with: name, in: folder) { progress in
+            print(progress)
+        } completion: { result in
             completion(result)
         }
+
     }
     
     func deleteProfileImage(url: String, completion: @escaping(_ result: Result<Bool?, Error>) -> ()) {
