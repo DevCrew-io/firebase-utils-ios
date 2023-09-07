@@ -51,6 +51,7 @@ class SetEmployeeViewModel {
         } completion: { result in
             completion(result)
         }
+
     }
     
     func deleteProfileImage(url: String, completion: @escaping(_ result: Result<Bool?, Error>) -> ()) {
