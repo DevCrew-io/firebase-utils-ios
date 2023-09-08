@@ -1,3 +1,10 @@
+//
+//  FirebaseServiceManager.swift
+//  
+//
+//  Copyright © 2023 DevCrew I/O.
+//
+
 /// Manager class for Firebase services.
 import FirebaseCore
 
