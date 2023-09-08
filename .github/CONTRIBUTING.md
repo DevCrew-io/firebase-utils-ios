@@ -17,10 +17,10 @@ We'd also love PRs. If you're thinking of a large PR, we advise opening up an is
 
 ## Submitting a pull request
 
-1. [Fork](https://github.com/DevCrew-io/get-buttons-stack/fork) and clone the repository.
+1. [Fork](https://github.com/DevCrew-io/firebase-utils-ios/fork) and clone the repository.
 1. Create a new branch: `git checkout -b my-branch-name`.
 1. Make your change, add tests, and make sure the tests still pass.
-1. Push to your fork and [submit a pull request](https://github.com/DevCrew-io/get-buttons-stack/compare).
+1. Push to your fork and [submit a pull request](https://github.com/DevCrew-io/firebase-utils-ios/compare).
 1. Pat yourself on the back and wait for your pull request to be reviewed and merged.
 
 
