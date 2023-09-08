@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/Code-Swift-informational?style=flat&logo=swift&color=FFA500)
 ![](https://img.shields.io/github/v/tag/DevCrew-io/firebase-utils-ios)
 
-FirebaseServices is a Swift framework that provides a convenient way to interact with various Firebase services, including Firestore, Storage, and Realtime Database.
+FirebaseServices is a Swift package that provides a convenient way to interact with various Firebase services, including Firestore, Storage, and Realtime Database.
 
 ## Installation
 
