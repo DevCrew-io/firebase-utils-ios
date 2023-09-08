@@ -23,7 +23,7 @@ To use FirebaseServices manually  in your project, follow these steps:
 
 1. Install the Firebase SDK by integrating it into your project using either Cocoapods or Swift Package Manager.
 
-2. Add the FirebaseServices framework to your project:
+2. Add the FirebaseServices package to your project:
    - Clone or download the FirebaseServices repository.
    - Drag and drop the `FirebaseServices.xcodeproj` file into your Xcode project.
    - In your project's target settings, navigate to "General" -> "Frameworks, Libraries, and Embedded Content".
@@ -64,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 ## Usage
 
-The FirebaseServices framework provides the following services:
+The FirebaseServices package provides the following services:
 
 ### FirestoreService
 
