@@ -336,6 +336,9 @@ class SetEmployeeViewController: UIViewController {
                 picker.delegate = self
                 self.present(picker, animated: true)
             })
+            actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel) {_ in
+                self.dismiss(animated: true)
+            })
             present(actionSheet, animated: true)
         }
         

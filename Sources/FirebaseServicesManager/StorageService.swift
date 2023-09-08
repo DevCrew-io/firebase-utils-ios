@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by Maaz Rafique on 06/07/2023.
+//  Copyright © 2023 DevCrew I/O.
 //
 
 import Foundation
@@ -25,7 +25,7 @@ public class StorageService {
         ///   - progressCompletion: A closure that gets called with the upload progress.
         ///   - completion: A closure that gets called upon completion with the result of the operation.
         /// - Returns: A `StorageUploadTask` instance for managing the upload task.
-    public func upload(file data: Data, with name: String, in folder: String, metaData: StorageMetadata?, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask {
+    public func upload(file data: Data, with name: String, in folder: String, metaData: StorageMetadata? = nil, progressCompletion: @escaping (_ progress: Progress) -> (), completion: @escaping (_ result: Result<(String?, String?), Error>) -> ()) -> StorageUploadTask {
         putDataRequest(data, with: name, in: folder, metaData: metaData, progressCompletion: progressCompletion, completion: completion)
     }
             
